@@ -74,19 +74,19 @@ class CustomerTokenSubscriber implements EventSubscriberInterface
 
     private function invalidateUsingSession(string $customerId): ?string
     {
-        $master = $this->requestStack->getMainRequest();
+        $mainRequest = $this->requestStack->getMainRequest();
 
-        if (!$master) {
+        if (!$mainRequest) {
             return null;
         }
 
         // Is not a storefront request
-        if (!$master->attributes->has(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT)) {
+        if (!$mainRequest->attributes->has(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT)) {
             return null;
         }
 
         /** @var SalesChannelContext $context */
-        $context = $master->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
+        $context = $mainRequest->attributes->get(PlatformRequest::ATTRIBUTE_SALES_CHANNEL_CONTEXT_OBJECT);
 
         // Not loggedin skip
         if ($context->getCustomer() === null) {
@@ -106,16 +106,16 @@ class CustomerTokenSubscriber implements EventSubscriberInterface
             'token' => $newToken,
         ]);
 
-        if (!$master->hasSession()) {
+        if (!$mainRequest->hasSession()) {
             return null;
         }
 
-        $session = $master->getSession();
+        $session = $mainRequest->getSession();
         $session->migrate();
         $session->set('sessionId', $session->getId());
 
         $session->set(PlatformRequest::HEADER_CONTEXT_TOKEN, $newToken);
-        $master->headers->set(PlatformRequest::HEADER_CONTEXT_TOKEN, $newToken);
+        $mainRequest->headers->set(PlatformRequest::HEADER_CONTEXT_TOKEN, $newToken);
 
         return $newToken;
     }

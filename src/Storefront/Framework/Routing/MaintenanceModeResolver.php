@@ -47,13 +47,13 @@ class MaintenanceModeResolver
         return $this->isMaintenanceModeActive($request) && $this->isClientAllowed($request);
     }
 
-    private function isSalesChannelRequest(?Request $master): bool
+    private function isSalesChannelRequest(?Request $main): bool
     {
-        if (!$master) {
+        if (!$main) {
             return false;
         }
 
-        return (bool) $master->attributes->get(SalesChannelRequest::ATTRIBUTE_IS_SALES_CHANNEL_REQUEST);
+        return (bool) $main->attributes->get(SalesChannelRequest::ATTRIBUTE_IS_SALES_CHANNEL_REQUEST);
     }
 
     private function isMaintenancePageRequest(Request $request): bool
@@ -76,13 +76,13 @@ class MaintenanceModeResolver
             && $request->attributes->get('_controller') === 'error_controller';
     }
 
-    private function isMaintenanceModeActive(?Request $master): bool
+    private function isMaintenanceModeActive(?Request $main): bool
     {
-        if (!$master) {
+        if (!$main) {
             return false;
         }
 
-        return (bool) $master->attributes->get(SalesChannelRequest::ATTRIBUTE_SALES_CHANNEL_MAINTENANCE);
+        return (bool) $main->attributes->get(SalesChannelRequest::ATTRIBUTE_SALES_CHANNEL_MAINTENANCE);
     }
 
     private function isClientAllowed(Request $request): bool
@@ -93,13 +93,13 @@ class MaintenanceModeResolver
         );
     }
 
-    private function getMaintenanceWhitelist(?Request $master): array
+    private function getMaintenanceWhitelist(?Request $main): array
     {
-        if (!$master) {
+        if (!$main) {
             return [];
         }
 
-        $whitelist = $master->attributes->get(SalesChannelRequest::ATTRIBUTE_SALES_CHANNEL_MAINTENANCE_IP_WHITLELIST);
+        $whitelist = $main->attributes->get(SalesChannelRequest::ATTRIBUTE_SALES_CHANNEL_MAINTENANCE_IP_WHITLELIST);
 
         if (!$whitelist) {
             return [];

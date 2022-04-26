@@ -48,7 +48,7 @@ class RouteScopeListener implements EventSubscriberInterface
     }
 
     /**
-     * Validate that any given controller invocation creates a valid scope with the original master request
+     * Validate that any given controller invocation creates a valid scope with the original main request
      */
     public function checkScope(ControllerEvent $event): void
     {
@@ -57,20 +57,20 @@ class RouteScopeListener implements EventSubscriberInterface
         }
 
         $scopes = $this->extractCurrentScopeAnnotation($event);
-        $masterRequest = $this->getMainRequest();
+        $mainRequest = $this->getMainRequest();
 
         foreach ($scopes as $routeScopeName) {
             $routeScope = $this->routeScopeRegistry->getRouteScope($routeScopeName);
 
-            $pathAllowed = $routeScope->isAllowedPath($masterRequest->getPathInfo());
-            $requestAllowed = $routeScope->isAllowed($masterRequest);
+            $pathAllowed = $routeScope->isAllowedPath($mainRequest->getPathInfo());
+            $requestAllowed = $routeScope->isAllowed($mainRequest);
 
             if ($pathAllowed && $requestAllowed) {
                 return;
             }
         }
 
-        throw new InvalidRouteScopeException($masterRequest->attributes->get('_route'));
+        throw new InvalidRouteScopeException($mainRequest->attributes->get('_route'));
     }
 
     private function extractControllerClass(ControllerEvent $event): string
@@ -114,12 +114,12 @@ class RouteScopeListener implements EventSubscriberInterface
 
     private function getMainRequest(): Request
     {
-        $masterRequest = $this->requestStack->getMainRequest();
+        $mainRequest = $this->requestStack->getMainRequest();
 
-        if (!$masterRequest) {
-            throw new \InvalidArgumentException('Unable to check the request scope without master request');
+        if (!$mainRequest) {
+            throw new \InvalidArgumentException('Unable to check the request scope without main request');
         }
 
-        return $masterRequest;
+        return $mainRequest;
     }
 }
